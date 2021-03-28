@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.scorpio.foodestimationsystem.databinding.ActivityMainBinding;
 import com.scorpio.foodestimationsystem.fragments.DiscountFragment;
@@ -110,5 +111,14 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     @Override
     public void onBackStackChanged() {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragmentManager.getBackStackEntryCount() == 1) {
+            Toast.makeText(this, "exit application", Toast.LENGTH_SHORT).show();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

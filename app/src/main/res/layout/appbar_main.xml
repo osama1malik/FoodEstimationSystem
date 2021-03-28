@@ -9,12 +9,12 @@
         android:id="@+id/btn_menu"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:padding="@dimen/_8sdp"
+        android:padding="@dimen/_14sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_placeholder" />
+        app:srcCompat="@drawable/menu_icon" />
 
     <TextView
         android:id="@+id/text_heading"
@@ -39,6 +39,6 @@
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_placeholder" />
+        app:srcCompat="@drawable/ic_search" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
