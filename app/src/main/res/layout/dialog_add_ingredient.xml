@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_8sdp"
+        android:elevation="@dimen/_8sdp"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_8sdp">
+
+            <TextView
+                android:id="@+id/heading"
+                android:layout_width="match_parent"
+                android:layout_marginVertical="@dimen/_12sdp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="Add New Ingredient"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/ed_ingredient_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/ed_ingredient_name"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:gravity="center_vertical"
+                android:hint="Enter Ingredient Name"
+                android:inputType="text"
+                android:lines="1"
+                app:layout_constraintBottom_toTopOf="@id/ed_ingredient_price"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/heading" />
+
+            <EditText
+                android:id="@+id/ed_ingredient_price"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:gravity="center_vertical"
+                android:hint="Enter Ingredient Price"
+                android:inputType="phone"
+                android:lines="1"
+                app:layout_constraintBottom_toTopOf="@id/ed_ingredient_quantity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ed_ingredient_name" />
+
+            <EditText
+                android:id="@+id/ed_ingredient_quantity"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:gravity="center_vertical"
+                android:hint="Enter Ingredient Quantity"
+                android:inputType="phone"
+                android:lines="1"
+                app:layout_constraintBottom_toTopOf="@id/ed_ingredient_unit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ed_ingredient_price" />
+
+            <EditText
+                android:id="@+id/ed_ingredient_unit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:gravity="center_vertical"
+                android:hint="Enter Ingredient Unit"
+                android:inputType="text"
+                android:lines="1"
+                app:layout_constraintBottom_toTopOf="@id/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ed_ingredient_quantity" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:background="@color/grey"
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@id/ed_ingredient_unit" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_save"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="Save"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_cancel"
+                app:layout_constraintTop_toBottomOf="@id/view" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,8 @@
 package com.scorpio.foodestimationsystem.fragments.receipesviews;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,19 +11,24 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.view.WindowManager;
 
-import com.scorpio.foodestimationsystem.R;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.scorpio.foodestimationsystem.MainActivity;
 import com.scorpio.foodestimationsystem.adapter.DishAdapter;
+import com.scorpio.foodestimationsystem.databinding.DialogAddDishesBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentDishesBinding;
-import com.scorpio.foodestimationsystem.modal.Dishes;
+import com.scorpio.foodestimationsystem.model.Dishes;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-public class DishesFragment extends Fragment {
+public class DishesFragment extends Fragment implements DishAdapter.DishClickListener {
 
     private FragmentDishesBinding binding = null;
     private DishAdapter dishAdapter;
@@ -51,30 +59,68 @@ public class DishesFragment extends Fragment {
 
     private void initClickListeners() {
         binding.emptyLayout.btnAddEmpty.setOnClickListener(v -> {
-            list.add(new Dishes("", "Fries"));
-            list.add(new Dishes("", "Sushi"));
-            list.add(new Dishes("", "Pizza"));
-            list.add(new Dishes("", "Noodles"));
-            list.add(new Dishes("", "Burger"));
-            list.add(new Dishes("", "Cupcake"));
-            list.add(new Dishes("", "Eggs"));
-            list.add(new Dishes("", "Melon"));
-
-            showHideEmptyLayout();
-            dishAdapter.notifyDataSetChanged();
+            showAddDishDialog();
         });
     }
 
     /**
      * Populate Available Dishes in recyclerView.
+     * This method also get dishes from firebase firestore database before populating the database.
      */
     private void populateDishesRV() {
-        dishAdapter = new DishAdapter(list);
+        ((MainActivity) requireActivity()).database.collection("Dishes").addSnapshotListener((value, error) -> {
+            if (value != null && value.size() > 0) {
+                list.clear();
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            Map<String, Object> data = dc.getDocument().getData();
+                            String image = data.get("image").toString();
+                            String name = data.get("name").toString();
+                            ArrayList<String> ingredients = (ArrayList<String>) data.get("ingredients");
+                            int price = Integer.parseInt(data.get("price").toString());
+                            list.add(new Dishes(image, name, price, ingredients));
+
+                            Log.i("TAG", "onEvent ADDED: " + dc.getDocument().getData().get("ingredients"));
+                            break;
+                        case MODIFIED:
+                            Log.i("TAG", "onEvent MODIFIED: " + dc.getDocument().getId());
+                            break;
+                        case REMOVED:
+                            Log.i("TAG", "onEvent REMOVED: " + dc.getDocument().getId());
+                            break;
+                    }
+                }
+
+                showHideEmptyLayout();
+                dishAdapter.notifyDataSetChanged();
+
+            }
+        });
+        dishAdapter = new DishAdapter(list, this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         binding.dishesRv.setLayoutManager(layoutManager);
         binding.dishesRv.setAdapter(dishAdapter);
         dishAdapter.notifyDataSetChanged();
         showHideEmptyLayout();
+    }
+
+    private void showAddDishDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        DialogAddDishesBinding dBinding = DialogAddDishesBinding.inflate(getLayoutInflater());
+        dialog.setContentView(dBinding.getRoot());
+
+        dBinding.btnCancel.setOnClickListener(view -> dialog.dismiss());
+        dBinding.btnSave.setOnClickListener(view -> dialog.dismiss());
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom((dialog.getWindow()).getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setAttributes(lp);
+
+        dialog.show();
     }
 
     /**
@@ -91,4 +137,10 @@ public class DishesFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDishClickListener(int position) {
+        if(position == -1){
+            showAddDishDialog();
+        }
+    }
 }

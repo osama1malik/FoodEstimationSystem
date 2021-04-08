@@ -47,10 +47,14 @@ public class RecipesFragment extends Fragment {
         adapter.addFragment(new StatsFragment(), "Stats");
 
         binding.viewPager.setAdapter(adapter);
-        binding.viewPager.setOffscreenPageLimit(0);
 
         binding.mainTabLayout.setupWithViewPager(binding.viewPager, true);
-        binding.mainTabLayout.setTabTextColors(Color.parseColor("#727272"), Color.parseColor("#ffffff"));
+
+        binding.mainTabLayout.getTabAt(0).setText("Dishes");
+        binding.mainTabLayout.getTabAt(1).setText("Ingredients");
+        binding.mainTabLayout.getTabAt(2).setText("Stats");
+
+        binding.mainTabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#ffffff"));
         binding.mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

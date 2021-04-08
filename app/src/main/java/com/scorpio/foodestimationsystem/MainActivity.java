@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.scorpio.foodestimationsystem.databinding.ActivityMainBinding;
 import com.scorpio.foodestimationsystem.fragments.DiscountFragment;
 import com.scorpio.foodestimationsystem.fragments.EventsFragment;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     private ActivityMainBinding binding = null;
     private FragmentManager fragmentManager = null;
+    public FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         fragmentManager.addOnBackStackChangedListener(this);
 
         changeFragment(new RecipesFragment(), "Recipes");
+        database = FirebaseFirestore.getInstance();
+
     }
 
     /**

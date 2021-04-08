@@ -1,7 +1,6 @@
 package com.scorpio.foodestimationsystem.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.scorpio.foodestimationsystem.R;
-import com.scorpio.foodestimationsystem.modal.Dishes;
+import com.scorpio.foodestimationsystem.model.Dishes;
 
 import java.util.ArrayList;
 
@@ -20,9 +19,11 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
 
     private Context context;
     private ArrayList<Dishes> list;
+    private DishClickListener listener;
 
-    public DishAdapter(ArrayList<Dishes> list) {
+    public DishAdapter(ArrayList<Dishes> list, DishClickListener listener) {
         this.list = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -39,8 +40,9 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
         if (position == list.size()) {
             holder.dishImage.setImageResource(R.drawable.item_add);
             holder.dishName.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(view -> listener.onDishClickListener(-1));
         } else {
-            holder.dishName.setText(list.get(position).getDishName());
+            holder.dishName.setText(list.get(position).getName());
         }
     }
 
@@ -58,5 +60,9 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
             dishImage = itemView.findViewById(R.id.image_dish);
             dishName = itemView.findViewById(R.id.text_dish);
         }
+    }
+
+    public interface DishClickListener {
+        public void onDishClickListener(int position);
     }
 }

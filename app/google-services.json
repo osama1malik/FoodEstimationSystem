@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "764337752575",
+    "project_id": "food-estimation-system",
+    "storage_bucket": "food-estimation-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764337752575:android:0a5f24845ade8a09773fca",
+        "android_client_info": {
+          "package_name": "com.scorpio.foodestimationsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "764337752575-qc7418eptl57fbc6rkvele3bpkp1uf8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZYePai_6-T6wjFRhhDy6ex1yT_PBlhFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "764337752575-qc7418eptl57fbc6rkvele3bpkp1uf8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
