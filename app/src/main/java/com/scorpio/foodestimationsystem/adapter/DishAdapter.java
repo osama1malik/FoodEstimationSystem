@@ -18,8 +18,8 @@ import java.util.ArrayList;
 public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> {
 
     private Context context;
-    private ArrayList<Dishes> list;
-    private DishClickListener listener;
+    private final ArrayList<Dishes> list;
+    private final DishClickListener listener;
 
     public DishAdapter(ArrayList<Dishes> list, DishClickListener listener) {
         this.list = list;
@@ -36,12 +36,13 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
         if (position == list.size()) {
             holder.dishImage.setImageResource(R.drawable.item_add);
             holder.dishName.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(view -> listener.onDishClickListener(-1));
         } else {
+            holder.dishImage.setImageResource(R.drawable.ic_placeholder);
+            holder.dishName.setVisibility(View.VISIBLE);
             holder.dishName.setText(list.get(position).getName());
         }
     }
@@ -51,7 +52,7 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
         return list.size() + 1;
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView dishImage;
         TextView dishName;
 
@@ -63,6 +64,6 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
     }
 
     public interface DishClickListener {
-        public void onDishClickListener(int position);
+        void onDishClickListener(int position);
     }
 }

@@ -1,17 +1,26 @@
 package com.scorpio.foodestimationsystem.model;
 
 public class Ingredients {
-    String name, unit;
+    String id, name, unit;
     int quantity, price;
 
     public Ingredients() {
     }
 
-    public Ingredients(String name, String unit, int quantity, int price) {
+    public Ingredients(String id, String name, String unit, int quantity, int price) {
+        this.id = id;
         this.name = name;
         this.unit = unit;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

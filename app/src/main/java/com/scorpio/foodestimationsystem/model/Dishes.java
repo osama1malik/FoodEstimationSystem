@@ -3,18 +3,28 @@ package com.scorpio.foodestimationsystem.model;
 import java.util.ArrayList;
 
 public class Dishes {
-    String image, name;
+    String id, image, name;
     int price;
     ArrayList<String> ingredients;
 
     public Dishes() {
     }
 
-    public Dishes(String image, String name, int price, ArrayList<String> ingredients) {
+    public Dishes(String id, String image, String name, int price, ArrayList<String> ingredients) {
+        this.id = id;
         this.image = image;
         this.name = name;
         this.price = price;
         this.ingredients = ingredients;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getImage() {

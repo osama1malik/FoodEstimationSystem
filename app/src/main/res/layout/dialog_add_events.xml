@@ -26,52 +26,69 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/_12sdp"
                 android:fontFamily="@font/montserrat"
-                android:text="Add New Dish"
+                android:text="Add New Event"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/ed_dish_name"
+                app:layout_constraintBottom_toTopOf="@id/ed_event_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/ed_dish_name"
+                android:id="@+id/ed_event_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:hint="Enter Dish Name"
+                android:hint="Enter Event Name"
                 android:inputType="text"
                 android:lines="1"
-                app:layout_constraintBottom_toTopOf="@id/ed_dish_price"
+                app:layout_constraintBottom_toTopOf="@id/ed_event_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/heading" />
 
             <EditText
-                android:id="@+id/ed_dish_price"
+                android:id="@+id/ed_event_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:editable="false"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                android:hint="Enter Event Date"
+                android:inputType="phone"
+                android:lines="1"
+                app:layout_constraintBottom_toTopOf="@id/ed_event_participants"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ed_event_name" />
+
+            <EditText
+                android:id="@+id/ed_event_participants"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:hint="Enter Dish Price"
+                android:hint="Enter Event Participants"
                 android:inputType="phone"
                 android:lines="1"
-                app:layout_constraintBottom_toTopOf="@id/select_ingredients"
+                app:layout_constraintBottom_toTopOf="@id/ed_event_dishes"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ed_dish_name" />
+                app:layout_constraintTop_toBottomOf="@id/ed_event_date" />
 
             <com.androidbuts.multispinnerfilter.MultiSpinnerSearch
-                android:id="@+id/select_ingredients"
+                android:id="@+id/ed_event_dishes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:textSize="@dimen/_14ssp"
-                app:hintText="Ingredients"
+                app:hintText="Dishes"
+                app:layout_constraintBottom_toTopOf="@id/view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ed_dish_price" />
+                app:layout_constraintTop_toBottomOf="@id/ed_event_participants" />
 
             <View
                 android:id="@+id/view"
@@ -80,13 +97,14 @@
                 android:layout_marginVertical="@dimen/_8sdp"
                 android:background="@color/grey"
                 android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@id/select_ingredients" />
+                app:layout_constraintTop_toBottomOf="@id/ed_event_dishes" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_cancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_save"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view" />
@@ -98,6 +116,7 @@
                 android:backgroundTint="@color/colorPrimary"
                 android:text="Save"
                 android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_cancel"
                 app:layout_constraintTop_toBottomOf="@id/view" />

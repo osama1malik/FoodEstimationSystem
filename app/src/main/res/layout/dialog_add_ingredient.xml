@@ -39,7 +39,7 @@
             <EditText
                 android:id="@+id/ed_ingredient_name"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:hint="Enter Ingredient Name"
                 android:inputType="text"
@@ -52,7 +52,7 @@
             <EditText
                 android:id="@+id/ed_ingredient_price"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:hint="Enter Ingredient Price"
                 android:inputType="phone"
@@ -65,7 +65,7 @@
             <EditText
                 android:id="@+id/ed_ingredient_quantity"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:hint="Enter Ingredient Quantity"
                 android:inputType="phone"
@@ -78,7 +78,7 @@
             <EditText
                 android:id="@+id/ed_ingredient_unit"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:hint="Enter Ingredient Unit"
                 android:inputType="text"

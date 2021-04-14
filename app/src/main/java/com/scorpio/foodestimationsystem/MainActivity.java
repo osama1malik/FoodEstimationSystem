@@ -19,12 +19,18 @@ import com.scorpio.foodestimationsystem.fragments.ExpensesFragment;
 import com.scorpio.foodestimationsystem.fragments.HowToUseFragment;
 import com.scorpio.foodestimationsystem.fragments.RecipesFragment;
 import com.scorpio.foodestimationsystem.fragments.StoreFragment;
+import com.scorpio.foodestimationsystem.model.Dishes;
+import com.scorpio.foodestimationsystem.model.Ingredients;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
     private ActivityMainBinding binding = null;
     private FragmentManager fragmentManager = null;
     public FirebaseFirestore database;
+    public static ArrayList<Ingredients> ingredientsList = new ArrayList();
+    public static ArrayList<Dishes> dishesList = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
