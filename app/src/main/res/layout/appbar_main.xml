@@ -41,4 +41,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_search" />
 
+    <ImageView
+        android:id="@+id/btn_done"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_8sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_done_24" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

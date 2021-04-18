@@ -1,6 +1,7 @@
 package com.scorpio.foodestimationsystem.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
             holder.dishImage.setImageResource(R.drawable.ic_placeholder);
             holder.dishName.setVisibility(View.VISIBLE);
             holder.dishName.setText(list.get(position).getName());
+            holder.itemView.setOnClickListener(view -> listener.onDishClickListener(position));
         }
     }
 

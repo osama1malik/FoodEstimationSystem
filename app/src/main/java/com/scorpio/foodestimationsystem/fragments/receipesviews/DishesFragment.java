@@ -85,12 +85,14 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
                             String image = data.get("image").toString();
                             String name = data.get("name").toString();
                             ArrayList<String> ingredients = (ArrayList<String>) data.get("ingredients");
+                            ArrayList<Integer> quantity = (ArrayList<Integer>) data.get("quantity");
                             int price = Integer.parseInt(data.get("price").toString());
-                            MainActivity.dishesList.add(new Dishes(dc.getDocument().getId(), image, name, price, ingredients));
+                            MainActivity.dishesList.add(new Dishes(dc.getDocument().getId(), image, name, price, ingredients, quantity));
 
                             Log.i("TAG", "onEvent ADDED: " + dc.getDocument().getData().get("ingredients"));
                             break;
                         case MODIFIED:
+                            populateDishesRV();
                             Log.i("TAG", "onEvent MODIFIED: " + dc.getDocument().getId());
                             break;
                         case REMOVED:
@@ -116,6 +118,9 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
         DialogAddDishesBinding dBinding = DialogAddDishesBinding.inflate(getLayoutInflater());
         dialog.setContentView(dBinding.getRoot());
 
+        dBinding.edDishPrice.setVisibility(View.GONE);
+        dBinding.selectIngredients.setVisibility(View.GONE);
+
         final ArrayList<String> selected = new ArrayList<>();
         ArrayList<KeyPairBoolData> data = new ArrayList<>();
         for (Ingredients ingredients : MainActivity.ingredientsList) {
@@ -135,17 +140,15 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
             for (KeyPairBoolData item : items) {
                 selected.add(((Ingredients) item.getObject()).getId());
             }
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).isSelected()) {
-                    Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
-                }
-            }
         });
 
         dBinding.btnCancel.setOnClickListener(view -> dialog.dismiss());
         dBinding.btnSave.setOnClickListener(view -> {
             String name = dBinding.edDishName.getText().toString();
-            String price = dBinding.edDishPrice.getText().toString();
+            MainActivity.currentDishName = name;
+            ((MainActivity) getActivity()).changeFragment(new AddDishFragment(), name);
+
+            /*String price = dBinding.edDishPrice.getText().toString();
             if (name.isEmpty()) {
                 dBinding.edDishName.setError("Enter Dish Name");
                 dBinding.edDishName.requestFocus();
@@ -167,7 +170,7 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
             ((MainActivity) requireActivity()).database.collection("Dishes").document(id).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
                 Toast.makeText(requireContext(), "Dish Added!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-            }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add Dish, Please try again!", Toast.LENGTH_SHORT).show());
+            }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add Dish, Please try again!", Toast.LENGTH_SHORT).show());*/
 
             dialog.dismiss();
         });
@@ -200,6 +203,18 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
     public void onDishClickListener(int position) {
         if (position == -1) {
             showAddDishDialog();
+        } else {
+            MainActivity.currentDish = MainActivity.dishesList.get(position);
+            ((MainActivity) getActivity()).changeFragment(new AddDishFragment(), MainActivity.dishesList.get(position).getName());
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).binding.appbar.btnSearch.setVisibility(View.INVISIBLE);
+        ((MainActivity) getActivity()).binding.appbar.btnDone.setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).binding.appbar.textHeading.setText("Recipes");
+
     }
 }

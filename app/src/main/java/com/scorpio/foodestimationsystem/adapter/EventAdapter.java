@@ -44,6 +44,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
         holder.eventDate.setVisibility(View.VISIBLE);
         holder.eventName.setText(list.get(position).getName());
         holder.eventDate.setText(getFormattedDate(list.get(position).getDate()));
+
+        holder.itemView.setOnClickListener(v -> {
+            listener.onEventClickListener(position);
+        });
     }
 
     @Override
@@ -53,7 +57,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
 
     private String getFormattedDate(Long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(time*1000);
+        cal.setTimeInMillis(time * 1000);
         return DateFormat.format("dd-MMM-yyyy", cal).toString();
     }
 

@@ -6,16 +6,18 @@ public class Dishes {
     String id, image, name;
     int price;
     ArrayList<String> ingredients;
+    ArrayList<Integer> quantity;
 
     public Dishes() {
     }
 
-    public Dishes(String id, String image, String name, int price, ArrayList<String> ingredients) {
+    public Dishes(String id, String image, String name, int price, ArrayList<String> ingredients, ArrayList<Integer> quantity) {
         this.id = id;
         this.image = image;
         this.name = name;
         this.price = price;
         this.ingredients = ingredients;
+        this.quantity = quantity;
     }
 
 
@@ -57,5 +59,13 @@ public class Dishes {
 
     public void setIngredients(ArrayList<String> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public ArrayList<Integer> getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(ArrayList<Integer> quantity) {
+        this.quantity = quantity;
     }
 }

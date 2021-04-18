@@ -19,6 +19,7 @@ import com.scorpio.foodestimationsystem.fragments.ExpensesFragment;
 import com.scorpio.foodestimationsystem.fragments.HowToUseFragment;
 import com.scorpio.foodestimationsystem.fragments.RecipesFragment;
 import com.scorpio.foodestimationsystem.fragments.StoreFragment;
+import com.scorpio.foodestimationsystem.interfaces.BackPressListener;
 import com.scorpio.foodestimationsystem.model.Dishes;
 import com.scorpio.foodestimationsystem.model.Ingredients;
 
@@ -26,11 +27,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
-    private ActivityMainBinding binding = null;
+    public ActivityMainBinding binding = null;
     private FragmentManager fragmentManager = null;
     public FirebaseFirestore database;
     public static ArrayList<Ingredients> ingredientsList = new ArrayList();
     public static ArrayList<Dishes> dishesList = new ArrayList();
+    public static Boolean callBackListener = false;
+    public static BackPressListener backPressListener;
+    public static String currentDishName = "";
+    public static Dishes currentDish = new Dishes();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
      * @param fragment: Object of fragment to be called.
      * @param heading:  Heading/TAG/Name of fragment.
      */
-    private void changeFragment(Fragment fragment, String heading) {
+    public void changeFragment(Fragment fragment, String heading) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(binding.mainFrame.getId(), fragment, heading);
         transaction.addToBackStack(heading);
@@ -125,10 +130,25 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     @Override
     public void onBackPressed() {
-        if (fragmentManager.getBackStackEntryCount() == 1) {
-            Toast.makeText(this, "exit application", Toast.LENGTH_SHORT).show();
+
+        if (callBackListener) {
+            if (backPressListener != null) {
+                backPressListener.onBackPressListener();
+            } else {
+                if (fragmentManager.getBackStackEntryCount() == 1) {
+                    Toast.makeText(this, "exit application", Toast.LENGTH_SHORT).show();
+                } else {
+                    super.onBackPressed();
+                }
+            }
         } else {
-            super.onBackPressed();
+            if (fragmentManager.getBackStackEntryCount() == 1) {
+                Toast.makeText(this, "exit application", Toast.LENGTH_SHORT).show();
+            } else {
+                super.onBackPressed();
+            }
         }
+
+
     }
 }

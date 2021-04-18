@@ -6,14 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".fragments.EventsFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/events_rv"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:visibility="visible"
+        android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/empty_layout"
-        layout="@layout/layout_no_recipes" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/events_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
+        <include
+            android:id="@+id/empty_layout"
+            layout="@layout/layout_no_recipes" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/single_event_layout"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_8sdp"
+            app:cardElevation="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

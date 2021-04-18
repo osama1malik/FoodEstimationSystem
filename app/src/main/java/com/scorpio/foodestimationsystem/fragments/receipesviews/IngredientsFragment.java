@@ -2,6 +2,7 @@ package com.scorpio.foodestimationsystem.fragments.receipesviews;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -28,20 +29,26 @@ import com.scorpio.foodestimationsystem.MainActivity;
 import com.scorpio.foodestimationsystem.adapter.IngredientAdapter;
 import com.scorpio.foodestimationsystem.databinding.DialogAddIngredientBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentIngredientsBinding;
+import com.scorpio.foodestimationsystem.interfaces.BackPressListener;
 import com.scorpio.foodestimationsystem.model.Ingredients;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import kotlin.Unit;
+
 @SuppressLint("SetTextI18n")
-public class IngredientsFragment extends Fragment implements IngredientAdapter.IngredientClickListener {
+public class IngredientsFragment extends Fragment implements IngredientAdapter.IngredientClickListener, BackPressListener {
 
     private FragmentIngredientsBinding binding = null;
     private IngredientAdapter ingredientAdapter;
+    public static ArrayList<Ingredients> selectedList = new ArrayList<>();
+    public boolean isSelectedLayout = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +74,23 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
     }
 
     private void initClickListeners() {
-        binding.emptyLayout.btnAddEmpty.setOnClickListener(v -> showAddIngredientDialog());
+        binding.emptyLayout.btnAddEmpty.setOnClickListener(v -> showAddIngredientDialog(-1));
+        binding.deleteFab.setOnClickListener(v -> {
+            ProgressDialog dialog = new ProgressDialog(requireContext());
+            dialog.setTitle("Deleting Ingredients");
+            dialog.setMessage("Please Wait...");
+            dialog.setCancelable(false);
+
+            for (Ingredients ingredients : selectedList) {
+                dialog.show();
+                deleteIngredient(ingredients, () -> {
+                    MainActivity.ingredientsList.remove(ingredients);
+                    ingredientAdapter.notifyDataSetChanged();
+                    setDeleteLayout(false);
+                    hideLoading(dialog::dismiss);
+                });
+            }
+        });
     }
 
     /**
@@ -90,6 +113,26 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
                             break;
                         case MODIFIED:
                             Log.i("TAG", "onEvent MODIFIED: " + dc.getDocument().getId());
+                            if (ingredientAdapter != null) {
+                                Map<String, Object> data1 = dc.getDocument().getData();
+                                String name1 = Objects.requireNonNull(data1.get("name")).toString();
+                                String unit1 = Objects.requireNonNull(data1.get("unit")).toString();
+                                int quantity1 = Integer.parseInt(Objects.requireNonNull(data1.get("quantity")).toString());
+                                int price1 = Integer.parseInt(Objects.requireNonNull(data1.get("price")).toString());
+
+                                for (int i = 0; i < MainActivity.ingredientsList.size(); i++) {
+                                    if (MainActivity.ingredientsList.get(i).getId().equalsIgnoreCase(dc.getDocument().getId())) {
+                                        MainActivity.ingredientsList.get(i).setName(name1);
+                                        MainActivity.ingredientsList.get(i).setPrice(price1);
+                                        MainActivity.ingredientsList.get(i).setQuantity(quantity1);
+                                        MainActivity.ingredientsList.get(i).setUnit(unit1);
+
+                                        ingredientAdapter.notifyItemChanged(i);
+
+                                        break;
+                                    }
+                                }
+                            }
                             break;
                         case REMOVED:
                             Log.i("TAG", "onEvent REMOVED: " + dc.getDocument().getId());
@@ -112,16 +155,41 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
         showHideEmptyLayout();
     }
 
-    private void showAddIngredientDialog() {
+    private void showAddIngredientDialog(int pos) {
         Dialog dialog = new Dialog(requireContext());
         DialogAddIngredientBinding dBinding = DialogAddIngredientBinding.inflate(getLayoutInflater());
         dialog.setContentView(dBinding.getRoot());
 
+        String id = "";
+        if (pos != -1) {
+            dBinding.heading.setText("Edit Ingredient");
+            Ingredients ingredients = MainActivity.ingredientsList.get(pos);
+            dBinding.edIngredientName.setText(ingredients.getName());
+            dBinding.edIngredientPrice.setText(String.valueOf(ingredients.getPrice()));
+            dBinding.edIngredientQuantity.setText(String.valueOf(ingredients.getQuantity()));
+            dBinding.edIngredientUnit.setText(ingredients.getUnit());
+
+            id = ingredients.getId();
+
+        } else {
+            dBinding.heading.setText("Add New Ingredient");
+            id = UUID.randomUUID().toString();
+        }
+
+        final String fId = id;
+
         dBinding.btnCancel.setOnClickListener(view -> dialog.dismiss());
         dBinding.btnSave.setOnClickListener(view -> {
             String name = dBinding.edIngredientName.getText().toString();
-            int price = Integer.parseInt(dBinding.edIngredientPrice.getText().toString());
-            int quantity = Integer.parseInt(dBinding.edIngredientQuantity.getText().toString());
+            int price = 0;
+            if (!dBinding.edIngredientPrice.getText().toString().isEmpty()) {
+                price = Integer.parseInt(dBinding.edIngredientPrice.getText().toString());
+            }
+            int quantity = 0;
+            if (!dBinding.edIngredientPrice.getText().toString().isEmpty()) {
+                quantity = Integer.parseInt(dBinding.edIngredientQuantity.getText().toString());
+            }
+
             String unit = dBinding.edIngredientUnit.getText().toString();
 
             final Map<String, Object> ingredient = new HashMap<>();
@@ -130,12 +198,10 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
             ingredient.put("quantity", quantity);
             ingredient.put("unit", unit);
 
-            String id = UUID.randomUUID().toString();
-            ((MainActivity) requireActivity()).database.collection("Ingredients").document(id).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
+            ((MainActivity) requireActivity()).database.collection("Ingredients").document(fId).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
                 Toast.makeText(requireContext(), "Ingredient Added!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add ingredient, Please try again!", Toast.LENGTH_SHORT).show());
-
         });
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
@@ -162,10 +228,70 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
         }
     }
 
+    private void deleteIngredient(Ingredients ingredient, Runnable callback) {
+        ((MainActivity) requireActivity()).database.collection("Ingredients").document(ingredient.getId()).delete().addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                callback.run();
+            }
+        });
+    }
+
+    private void hideLoading(Runnable callback) {
+        if (selectedList.isEmpty()) {
+            callback.run();
+        }
+    }
+
+    private void setDeleteLayout(Boolean show) {
+        if (show) {
+            MainActivity.callBackListener = true;
+            MainActivity.backPressListener = this;
+            binding.deleteFab.setVisibility(View.VISIBLE);
+            isSelectedLayout = true;
+        } else {
+            MainActivity.callBackListener = false;
+            isSelectedLayout = false;
+            selectedList.clear();
+            binding.deleteFab.setVisibility(View.GONE);
+            ingredientAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onIngredientClickListener(int position) {
         if (position == -1) {
-            showAddIngredientDialog();
+            if (!isSelectedLayout) {
+                showAddIngredientDialog(-1);
+            }
+        } else {
+            if (isSelectedLayout) {
+                if (selectedList.contains(MainActivity.ingredientsList.get(position))) {
+                    selectedList.remove(MainActivity.ingredientsList.get(position));
+                    if (selectedList.isEmpty()) {
+                        setDeleteLayout(false);
+                    }
+                } else {
+                    selectedList.add(MainActivity.ingredientsList.get(position));
+                }
+                ingredientAdapter.notifyItemChanged(position);
+            } else {
+                showAddIngredientDialog(position);
+            }
         }
+    }
+
+    @Override
+    public void onIngredientLongListener(int position) {
+        if (!isSelectedLayout) {
+            setDeleteLayout(true);
+            selectedList.add(MainActivity.ingredientsList.get(position));
+            ingredientAdapter.notifyItemChanged(position);
+        }
+    }
+
+    @Override
+    public void onBackPressListener() {
+        setDeleteLayout(false);
     }
 }

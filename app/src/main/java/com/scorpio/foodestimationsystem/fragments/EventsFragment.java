@@ -33,6 +33,7 @@ import com.scorpio.foodestimationsystem.adapter.EventAdapter;
 import com.scorpio.foodestimationsystem.databinding.DialogAddDishesBinding;
 import com.scorpio.foodestimationsystem.databinding.DialogAddEventsBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentEventsBinding;
+import com.scorpio.foodestimationsystem.interfaces.BackPressListener;
 import com.scorpio.foodestimationsystem.model.Dishes;
 import com.scorpio.foodestimationsystem.model.Events;
 import com.scorpio.foodestimationsystem.model.Ingredients;
@@ -46,7 +47,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class EventsFragment extends Fragment implements EventAdapter.EventClickListener {
+public class EventsFragment extends Fragment implements EventAdapter.EventClickListener, BackPressListener {
 
     private FragmentEventsBinding binding = null;
     private ArrayList<Events> eventsList = new ArrayList<>();
@@ -225,8 +226,26 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
         }
     }
 
+    private void showHideEventLayout(Boolean showEvent) {
+        if (showEvent) {
+            MainActivity.callBackListener = true;
+            binding.listLayout.setVisibility(View.GONE);
+            binding.singleEventLayout.setVisibility(View.VISIBLE);
+        } else {
+            MainActivity.callBackListener = false;
+            binding.listLayout.setVisibility(View.VISIBLE);
+            binding.singleEventLayout.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onEventClickListener(int position) {
+        showHideEventLayout(true);
+        MainActivity.backPressListener = this;
+    }
 
+    @Override
+    public void onBackPressListener() {
+        showHideEventLayout(false);
     }
 }

@@ -5,8 +5,10 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/main_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="?selectableItemBackgroundBorderless"
         android:layout_margin="@dimen/_8sdp"
         app:cardCornerRadius="@dimen/_4sdp"
         app:layout_constraintBottom_toBottomOf="parent"
