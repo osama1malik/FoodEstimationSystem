@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
+import com.scorpio.foodestimationsystem.MainActivity;
 import com.scorpio.foodestimationsystem.R;
 import com.scorpio.foodestimationsystem.adapter.ViewPagerAdapter;
 import com.scorpio.foodestimationsystem.databinding.FragmentRecipesBinding;
@@ -41,6 +42,8 @@ public class RecipesFragment extends Fragment {
     }
 
     private void initFragment() {
+        ((MainActivity) requireActivity()).binding.appbar.btnSearch.setVisibility(View.VISIBLE);
+        ((MainActivity) requireActivity()).binding.appbar.btnDone.setVisibility(View.INVISIBLE);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), BEHAVIOR_SET_USER_VISIBLE_HINT);
         adapter.addFragment(new DishesFragment(), "Dishes");
         adapter.addFragment(new IngredientsFragment(), "Ingredients");

@@ -6,6 +6,10 @@
 
     <color name="black">#FF000000</color>
     <color name="grey">#929292</color>
+    <color name="grey_dark">#737272</color>
+    <color name="grey_70">#B3929292</color>
+    <color name="grey_dark_70">#B3737272</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_50">#80FFFFFF</color>
     <color name="cardSelected">#E1E1E1</color>
 </resources>

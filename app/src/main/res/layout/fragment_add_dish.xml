@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.8"
+        android:foreground="#4D000000"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/dish_background" />
 
