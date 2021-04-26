@@ -5,7 +5,6 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,44 +12,31 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.scorpio.foodestimationsystem.R;
 import com.scorpio.foodestimationsystem.model.Dishes;
-import com.scorpio.foodestimationsystem.model.Events;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder> {
-
+public class EventDishesAdapter extends RecyclerView.Adapter<EventDishesAdapter.MyViewHolder> {
     private Context context;
-    private final ArrayList<Events> list;
-    private final EventAdapter.EventClickListener listener;
+    private final ArrayList<Dishes> list;
 
-    public EventAdapter(ArrayList<Events> list, EventAdapter.EventClickListener listener) {
+    public EventDishesAdapter(ArrayList<Dishes> list) {
         this.list = list;
-        this.listener = listener;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_events, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event_dishes, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.eventName.setVisibility(View.VISIBLE);
-        holder.eventDate.setVisibility(View.VISIBLE);
-        holder.eventName.setText(list.get(position).getName());
-
-        String date = getFormattedDate(list.get(position).getDate());
-
-        holder.eventDate.setText(date);
-
-        holder.itemView.setOnClickListener(v -> {
-            listener.onEventClickListener(position);
-        });
+        holder.eventDishName.setText(list.get(position).getName().toString());
+        holder.eventDishCost.setText("Rs" + list.get(position).getPrice() + "/-");
     }
 
     @Override
@@ -65,17 +51,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView eventName;
-        TextView eventDate;
+        TextView eventDishName;
+        TextView eventDishQuantity;
+        TextView eventDishCost;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            eventName = itemView.findViewById(R.id.event_name);
-            eventDate = itemView.findViewById(R.id.event_date);
+            eventDishName = itemView.findViewById(R.id.tv_dish_name);
+            eventDishCost = itemView.findViewById(R.id.tv_dish_cost);
         }
-    }
-
-    public interface EventClickListener {
-        void onEventClickListener(int position);
     }
 }

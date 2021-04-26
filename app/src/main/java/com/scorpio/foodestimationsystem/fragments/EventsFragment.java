@@ -30,6 +30,7 @@ import com.scorpio.foodestimationsystem.MainActivity;
 import com.scorpio.foodestimationsystem.R;
 import com.scorpio.foodestimationsystem.adapter.DishAdapter;
 import com.scorpio.foodestimationsystem.adapter.EventAdapter;
+import com.scorpio.foodestimationsystem.adapter.EventDishesAdapter;
 import com.scorpio.foodestimationsystem.databinding.DialogAddDishesBinding;
 import com.scorpio.foodestimationsystem.databinding.DialogAddEventsBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentEventsBinding;
@@ -108,7 +109,7 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
             }
         });
         eventAdapter = new EventAdapter(eventsList, this);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         binding.eventsRv.setLayoutManager(layoutManager);
         binding.eventsRv.setAdapter(eventAdapter);
         eventAdapter.notifyDataSetChanged();
@@ -138,6 +139,7 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
         dBinding.edEventDishes.setShowSelectAllButton(true);
         dBinding.edEventDishes.setClearText("Close & Clear");
         dBinding.edEventDishes.setItems(data, items -> {
+            selected.clear();
             for (KeyPairBoolData item : items) {
                 selected.add(((Dishes) item.getObject()).getId());
             }
@@ -208,7 +210,7 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
 
     private String getFormattedDate(Long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(selectedTime);
+        cal.setTimeInMillis(time);
         return DateFormat.format("dd-MMM-yyyy", cal).toString();
     }
 
@@ -241,6 +243,40 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
     @Override
     public void onEventClickListener(int position) {
         showHideEventLayout(true);
+
+        binding.eventHeading.setText(eventsList.get(position).getName());
+        binding.txtEventParticipants.setText(eventsList.get(position).getParticipants() + "");
+        binding.txtEventDate.setText(getFormattedDate(eventsList.get(position).getDate() * 1000));
+
+
+        ArrayList<Dishes> dishes = new ArrayList<>();
+        ArrayList<String> dishIds = eventsList.get(position).getDishes();
+
+        for (String id : dishIds) {
+            Log.i("TAG", "onEventClickListener: " + id);
+            for (Dishes dish : MainActivity.dishesList) {
+                Log.i("TAG", "onEventClickListener 222: " + dish.getId());
+                if (dish.getId().equalsIgnoreCase(id)) {
+                    Toast.makeText(requireContext(), "found: " + dishes.size(), Toast.LENGTH_SHORT).show();
+                    dishes.add(dish);
+                    break;
+                }
+            }
+        }
+
+        /*for (Dishes dish : MainActivity.dishesList) {
+            if (dishIds.contains(dish.getId().toString())) {
+                dishes.add(dish);
+            }
+        }*/
+
+
+        EventDishesAdapter adapter = new EventDishesAdapter(dishes);
+        binding.eventDishesRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.eventDishesRv.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+
         MainActivity.backPressListener = this;
     }
 
