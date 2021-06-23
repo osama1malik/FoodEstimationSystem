@@ -1,6 +1,7 @@
 package com.scorpio.foodestimationsystem.fragments.receipesviews;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -21,12 +22,15 @@ import android.widget.Toast;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.SetOptions;
 import com.scorpio.foodestimationsystem.MainActivity;
 import com.scorpio.foodestimationsystem.adapter.DishAdapter;
 import com.scorpio.foodestimationsystem.databinding.DialogAddDishesBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentDishesBinding;
+import com.scorpio.foodestimationsystem.interfaces.BackPressListener;
 import com.scorpio.foodestimationsystem.model.Dishes;
 import com.scorpio.foodestimationsystem.model.Ingredients;
 
@@ -36,10 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class DishesFragment extends Fragment implements DishAdapter.DishClickListener {
+public class DishesFragment extends Fragment implements DishAdapter.DishClickListener, BackPressListener {
 
     private FragmentDishesBinding binding = null;
     private DishAdapter dishAdapter;
+    public static ArrayList<Dishes> selectedList = new ArrayList<>();
+    public boolean isSelectedLayout = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,23 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
         binding.emptyLayout.btnAddEmpty.setOnClickListener(v -> {
             showAddDishDialog();
         });
+
+        binding.deleteFab.setOnClickListener(v -> {
+            ProgressDialog dialog = new ProgressDialog(requireContext());
+            dialog.setTitle("Deleting Ingredients");
+            dialog.setMessage("Please Wait...");
+            dialog.setCancelable(false);
+
+            for (Dishes dishes : selectedList) {
+                dialog.show();
+                deleteDishes(dishes, () -> {
+                    MainActivity.dishesList.remove(dishes);
+                    dishAdapter.notifyDataSetChanged();
+                    setDeleteLayout(false);
+                    hideLoading(dialog::dismiss);
+                });
+            }
+        });
     }
 
     /**
@@ -81,14 +104,20 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
                 for (DocumentChange dc : value.getDocumentChanges()) {
                     switch (dc.getType()) {
                         case ADDED:
-                            Map<String, Object> data = dc.getDocument().getData();
-                            String image = data.get("image").toString();
-                            String name = data.get("name").toString();
-                            ArrayList<String> ingredients = (ArrayList<String>) data.get("ingredients");
-                            ArrayList<Integer> quantity = (ArrayList<Integer>) data.get("quantity");
-                            int price = Integer.parseInt(data.get("price").toString());
-                            MainActivity.dishesList.add(new Dishes(dc.getDocument().getId(), image, name, price, ingredients, quantity));
+                            try {
+                                Map<String, Object> data = dc.getDocument().getData();
+                                String userid = data.get("user_id").toString();
+                                String image = data.get("image").toString();
+                                String name = data.get("name").toString();
+                                ArrayList<String> ingredients = (ArrayList<String>) data.get("ingredients");
+                                ArrayList<Long> quantity = (ArrayList<Long>) data.get("quantity");
+                                int price = Integer.parseInt(data.get("price").toString());
+                                if (userid.equalsIgnoreCase(((MainActivity) requireActivity()).currentUser.getUid())) {
+                                    MainActivity.dishesList.add(new Dishes(((MainActivity) requireActivity()).currentUser.getUid(), dc.getDocument().getId(), image, name, price, ingredients, quantity));
+                                }
+                            } catch (Exception e) {
 
+                            }
                             Log.i("TAG", "onEvent ADDED: " + dc.getDocument().getData().get("ingredients"));
                             break;
                         case MODIFIED:
@@ -147,31 +176,6 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
             String name = dBinding.edDishName.getText().toString();
             MainActivity.currentDishName = name;
             ((MainActivity) getActivity()).changeFragment(new AddDishFragment(), name);
-
-            /*String price = dBinding.edDishPrice.getText().toString();
-            if (name.isEmpty()) {
-                dBinding.edDishName.setError("Enter Dish Name");
-                dBinding.edDishName.requestFocus();
-                return;
-            }
-            if (price.isEmpty()) {
-                dBinding.edDishPrice.setError("Enter Dish Name");
-                dBinding.edDishPrice.requestFocus();
-                return;
-            }
-
-            final Map<String, Object> ingredient = new HashMap<>();
-            ingredient.put("image", "image here");
-            ingredient.put("name", name);
-            ingredient.put("price", price);
-            ingredient.put("ingredients", selected);
-
-            String id = UUID.randomUUID().toString();
-            ((MainActivity) requireActivity()).database.collection("Dishes").document(id).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
-                Toast.makeText(requireContext(), "Dish Added!", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add Dish, Please try again!", Toast.LENGTH_SHORT).show());*/
-
             dialog.dismiss();
         });
 
@@ -199,13 +203,69 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
         }
     }
 
+    private void setDeleteLayout(Boolean show) {
+        if (show) {
+            MainActivity.callBackListener = true;
+            MainActivity.backPressListener = this;
+            binding.deleteFab.setVisibility(View.VISIBLE);
+            isSelectedLayout = true;
+        } else {
+            MainActivity.callBackListener = false;
+            isSelectedLayout = false;
+            selectedList.clear();
+            binding.deleteFab.setVisibility(View.GONE);
+            dishAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void deleteDishes(Dishes dishes, Runnable callback) {
+        ((MainActivity) requireActivity()).database.collection("Dishes").document(dishes.getId()).delete().addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                callback.run();
+            }
+        });
+    }
+
+    private void hideLoading(Runnable callback) {
+        if (selectedList.isEmpty()) {
+            callback.run();
+        }
+    }
+
     @Override
     public void onDishClickListener(int position) {
         if (position == -1) {
-            showAddDishDialog();
+            if (!isSelectedLayout) {
+                showAddDishDialog();
+            }
         } else {
-            MainActivity.currentDish = MainActivity.dishesList.get(position);
-            ((MainActivity) getActivity()).changeFragment(new AddDishFragment(), MainActivity.dishesList.get(position).getName());
+
+            if (isSelectedLayout) {
+                if (selectedList.contains(MainActivity.dishesList.get(position))) {
+                    selectedList.remove(MainActivity.dishesList.get(position));
+                    if (selectedList.isEmpty()) {
+                        setDeleteLayout(false);
+                    }
+                } else {
+                    selectedList.add(MainActivity.dishesList.get(position));
+                }
+                dishAdapter.notifyItemChanged(position);
+            } else {
+                MainActivity.currentDish = MainActivity.dishesList.get(position);
+                ((MainActivity) getActivity()).changeFragment(new AddDishFragment(), MainActivity.dishesList.get(position).getName());
+            }
+
+
+        }
+    }
+
+    @Override
+    public void onDishLongClickListener(int position) {
+        if (!isSelectedLayout) {
+            setDeleteLayout(true);
+            selectedList.add(MainActivity.dishesList.get(position));
+            dishAdapter.notifyItemChanged(position);
         }
     }
 
@@ -216,5 +276,10 @@ public class DishesFragment extends Fragment implements DishAdapter.DishClickLis
         ((MainActivity) getActivity()).binding.appbar.btnDone.setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).binding.appbar.textHeading.setText("Recipes");
 
+    }
+
+    @Override
+    public void onBackPressListener() {
+        setDeleteLayout(false);
     }
 }

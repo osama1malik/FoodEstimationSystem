@@ -40,7 +40,7 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
     private ArrayList<String> finalIngredientsList = new ArrayList<>();
     private AddIngredientAdapter dishAdapter;
     private int totalCost = 0;
-    public static ArrayList<Integer> quantityList = new ArrayList<>();
+    public static ArrayList<Long> quantityList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,7 +71,7 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
 
             for (String id : finalIngredientsList) {
                 for (Ingredients ingredients : MainActivity.ingredientsList) {
-                    if(id.equalsIgnoreCase(ingredients.getId())){
+                    if (id.equalsIgnoreCase(ingredients.getId())) {
                         dishIngredientsList.add(ingredients);
                         break;
                     }
@@ -97,6 +97,7 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
             currentDish.setQuantity(quantityList);
 
             final Map<String, Object> ingredient = new HashMap<>();
+            ingredient.put("user_id", ((MainActivity) requireActivity()).currentUser.getUid());
             ingredient.put("image", "image here");
             ingredient.put("name", currentDish.getName());
             ingredient.put("price", currentDish.getPrice());
@@ -111,10 +112,10 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
                 id = currentDish.getId();
             }
 
-
             ((MainActivity) requireActivity()).database.collection("Dishes").document(id).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
                 try {
                     Toast.makeText(requireContext(), "Dish Added!", Toast.LENGTH_SHORT).show();
+                    requireActivity().onBackPressed();
                 } catch (Exception ignored) {
 
                 }
@@ -155,7 +156,7 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
         dBinding.btnSave.setOnClickListener(view -> {
             dishIngredientsList.addAll(selected);
             for (int i = 0; i < selected.size(); i++) {
-                quantityList.add(1);
+                quantityList.add((long) 1);
             }
             dishAdapter.notifyDataSetChanged();
             calculateCost();
@@ -207,7 +208,7 @@ public class AddDishFragment extends Fragment implements AddIngredientAdapter.In
 
     @Override
     public void onCostChangeListener(int position, int quantity) {
-        quantityList.set(position, quantity);
+        quantityList.set(position, (long) quantity);
         calculateCost();
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
+    android:layout_marginHorizontal="@dimen/_8sdp"
+    android:layout_marginVertical="@dimen/_4sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/ingredient_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:layout_weight="1.5"
+            android:fontFamily="@font/montserrat"
+            android:gravity="start|center_vertical"
+            android:maxLines="2"
+            android:text="Test Ingredient"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
+
+
+        <TextView
+            android:id="@+id/ingredient_quantity_total"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="10"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
+
+
+        <TextView
+            android:id="@+id/ingredient_quantity_to_be_used"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="10"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

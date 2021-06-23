@@ -11,7 +11,7 @@
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/content_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintHeight_percent="0.32"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -36,6 +36,34 @@
             android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="@dimen/_15ssp"
+            app:layout_constraintBottom_toTopOf="@id/header_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/header_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="Osama"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintBottom_toTopOf="@id/header_email"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/header_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_6sdp"
+            android:layout_marginVertical="@dimen/_8sdp"
+            android:fontFamily="@font/montserrat"
+            android:text="Osama"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.1"
@@ -60,7 +88,7 @@
                 android:id="@+id/ll_recipe"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/_8sdp"
@@ -88,7 +116,7 @@
                 android:id="@+id/ll_discount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/_8sdp"
@@ -116,7 +144,7 @@
                 android:id="@+id/ll_events"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/_8sdp"
@@ -144,7 +172,7 @@
                 android:id="@+id/ll_expenses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/_8sdp"
@@ -172,11 +200,11 @@
                 android:id="@+id/ll_store"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/_8sdp"
-                app:layout_constraintBottom_toTopOf="@id/ll_how_to_use"
+                app:layout_constraintBottom_toTopOf="@id/ll_logout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ll_expenses">
@@ -197,13 +225,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ll_how_to_use"
+                android:id="@+id/ll_logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="?selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:visibility="gone"
                 android:paddingVertical="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -220,7 +247,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="How to use"
+                    android:text="Logout"
                     android:textSize="@dimen/_14ssp" />
 
             </LinearLayout>

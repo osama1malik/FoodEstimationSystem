@@ -47,7 +47,7 @@ public class RecipesFragment extends Fragment {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), BEHAVIOR_SET_USER_VISIBLE_HINT);
         adapter.addFragment(new DishesFragment(), "Dishes");
         adapter.addFragment(new IngredientsFragment(), "Ingredients");
-        adapter.addFragment(new StatsFragment(), "Stats");
+//        adapter.addFragment(new StatsFragment(), "Stats");
 
         binding.viewPager.setAdapter(adapter);
 
@@ -55,7 +55,7 @@ public class RecipesFragment extends Fragment {
 
         binding.mainTabLayout.getTabAt(0).setText("Dishes");
         binding.mainTabLayout.getTabAt(1).setText("Ingredients");
-        binding.mainTabLayout.getTabAt(2).setText("Stats");
+//        binding.mainTabLayout.getTabAt(2).setText("Stats");
 
         binding.mainTabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#ffffff"));
         binding.mainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

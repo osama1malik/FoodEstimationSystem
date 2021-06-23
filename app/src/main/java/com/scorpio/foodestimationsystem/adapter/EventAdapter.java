@@ -9,9 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.scorpio.foodestimationsystem.R;
+import com.scorpio.foodestimationsystem.fragments.EventsFragment;
+import com.scorpio.foodestimationsystem.fragments.receipesviews.IngredientsFragment;
 import com.scorpio.foodestimationsystem.model.Dishes;
 import com.scorpio.foodestimationsystem.model.Events;
 
@@ -40,6 +44,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
+        if (EventsFragment.selectedList.contains(list.get(position))) {
+            holder.mainCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardSelected));
+        } else {
+            holder.mainCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white));
+        }
+
         holder.eventName.setVisibility(View.VISIBLE);
         holder.eventDate.setVisibility(View.VISIBLE);
         holder.eventName.setText(list.get(position).getName());
@@ -48,8 +59,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
 
         holder.eventDate.setText(date);
 
-        holder.itemView.setOnClickListener(v -> {
-            listener.onEventClickListener(position);
+        holder.itemView.setOnClickListener(v -> listener.onEventClickListener(position));
+
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onEventLongClickListener(position);
+            return true;
         });
     }
 
@@ -61,21 +75,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.MyViewHolder
     private String getFormattedDate(Long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(time * 1000);
-        return DateFormat.format("dd-MMM-yyyy", cal).toString();
+        return DateFormat.format("hh:mm a dd MMM,yy", cal).toString();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView eventName;
         TextView eventDate;
+        MaterialCardView mainCard;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             eventName = itemView.findViewById(R.id.event_name);
             eventDate = itemView.findViewById(R.id.event_date);
+            mainCard = itemView.findViewById(R.id.main_card);
         }
     }
 
     public interface EventClickListener {
         void onEventClickListener(int position);
+
+        void onEventLongClickListener(int position);
     }
 }

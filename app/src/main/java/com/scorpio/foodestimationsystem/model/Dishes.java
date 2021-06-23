@@ -3,15 +3,16 @@ package com.scorpio.foodestimationsystem.model;
 import java.util.ArrayList;
 
 public class Dishes {
-    String id, image, name;
+    String user_id, id, image, name;
     int price;
     ArrayList<String> ingredients;
-    ArrayList<Integer> quantity;
+    ArrayList<Long> quantity;
 
     public Dishes() {
     }
 
-    public Dishes(String id, String image, String name, int price, ArrayList<String> ingredients, ArrayList<Integer> quantity) {
+    public Dishes(String user_id, String id, String image, String name, int price, ArrayList<String> ingredients, ArrayList<Long> quantity) {
+        this.user_id = user_id;
         this.id = id;
         this.image = image;
         this.name = name;
@@ -20,6 +21,13 @@ public class Dishes {
         this.quantity = quantity;
     }
 
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
 
     public String getId() {
         return id;
@@ -61,11 +69,11 @@ public class Dishes {
         this.ingredients = ingredients;
     }
 
-    public ArrayList<Integer> getQuantity() {
+    public ArrayList<Long> getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(ArrayList<Integer> quantity) {
+    public void setQuantity(ArrayList<Long> quantity) {
         this.quantity = quantity;
     }
 }

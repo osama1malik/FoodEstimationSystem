@@ -1,72 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.StoreFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="#4D000000"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/store_background" />
+
+    <LinearLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_8sdp"
+        android:background="@drawable/white_card"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_4sdp"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/main_icon"
+        <TextView
+            android:id="@+id/name"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.5"
-            app:layout_constraintHorizontal_bias="0.1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/main_icon" />
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:layout_weight="1.5"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="Ingredient Name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
 
-        <ImageView
-            android:id="@+id/logo_text"
+
+        <TextView
+            android:id="@+id/quantity_total"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/_12sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.35"
-            app:layout_constraintStart_toEndOf="@id/main_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/food_estimation_logo" />
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="Quantity Available"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/main_tab_layout"
+        <TextView
+            android:id="@+id/quantity_to_be_used"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="Quantity Required"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/store_rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:elevation="@dimen/_2sdp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_layout"
-        app:tabIndicatorColor="@color/white"
-        app:tabSelectedTextColor="@color/white"
-        app:tabTextAppearance="@style/tab_text"
-        app:tabTextColor="@color/white" />
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_tab_layout"
-        app:layout_constraintVertical_bias="0.0" />
-
+        tools:listitem="@layout/item_store" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

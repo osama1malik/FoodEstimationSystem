@@ -1,18 +1,10 @@
 package com.scorpio.foodestimationsystem.fragments;
 
 import android.app.Dialog;
-import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,39 +13,52 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.SetOptions;
 import com.scorpio.foodestimationsystem.MainActivity;
-import com.scorpio.foodestimationsystem.R;
-import com.scorpio.foodestimationsystem.adapter.DishAdapter;
+import com.scorpio.foodestimationsystem.Util.CustomDateTimePicker;
 import com.scorpio.foodestimationsystem.adapter.EventAdapter;
 import com.scorpio.foodestimationsystem.adapter.EventDishesAdapter;
-import com.scorpio.foodestimationsystem.databinding.DialogAddDishesBinding;
 import com.scorpio.foodestimationsystem.databinding.DialogAddEventsBinding;
 import com.scorpio.foodestimationsystem.databinding.FragmentEventsBinding;
 import com.scorpio.foodestimationsystem.interfaces.BackPressListener;
 import com.scorpio.foodestimationsystem.model.Dishes;
 import com.scorpio.foodestimationsystem.model.Events;
 import com.scorpio.foodestimationsystem.model.Ingredients;
+import com.scorpio.foodestimationsystem.service.NotificationUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.scorpio.foodestimationsystem.MainActivity.eventsList;
+
 public class EventsFragment extends Fragment implements EventAdapter.EventClickListener, BackPressListener {
 
     private FragmentEventsBinding binding = null;
-    private ArrayList<Events> eventsList = new ArrayList<>();
+
     private long selectedTime = 0;
     private EventAdapter eventAdapter;
+    public static ArrayList<Events> selectedList = new ArrayList<>();
+    private CustomDateTimePicker customDateTimePicker;
+
+    public boolean isSelectedLayout = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +72,7 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initClickListeners();
+        ((MainActivity) requireActivity()).binding.appbar.btnDone.setVisibility(View.INVISIBLE);
     }
 
     private void initFragment() {
@@ -77,37 +83,27 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
         binding.emptyLayout.btnAddEmpty.setOnClickListener(v -> {
             showAddEventDialog();
         });
+        binding.deleteFab.setOnClickListener(v -> {
+            ProgressDialog dialog = new ProgressDialog(requireContext());
+            dialog.setTitle("Deleting Events");
+            dialog.setMessage("Please Wait...");
+            dialog.setCancelable(false);
+
+            for (Events events : selectedList) {
+                dialog.show();
+                deleteEvents(events, () -> {
+                    eventsList.remove(events);
+                    eventAdapter.notifyDataSetChanged();
+                    setDeleteLayout(false);
+                    hideLoading(dialog::dismiss);
+                });
+            }
+        });
     }
 
     private void populateEventsRV() {
-        eventsList.clear();
-        ((MainActivity) requireActivity()).database.collection("Events").addSnapshotListener((value, error) -> {
-            if (value != null && value.size() > 0) {
-                for (DocumentChange dc : value.getDocumentChanges()) {
-                    switch (dc.getType()) {
-                        case ADDED:
-                            Map<String, Object> data = dc.getDocument().getData();
-                            String name = Objects.requireNonNull(data.get("name")).toString();
-                            int participants = Integer.parseInt(data.get("participants").toString());
-                            ArrayList<String> dishes = (ArrayList<String>) data.get("dishes");
-                            long date = ((com.google.firebase.Timestamp) data.get("date")).getSeconds();
-                            eventsList.add(new Events(name, participants, date, dishes));
+        showHideEmptyLayout();
 
-                            Log.i("TAG", "onEvent ADDED: " + dc.getDocument().getData().get("ingredients"));
-                            break;
-                        case MODIFIED:
-                            Log.i("TAG", "onEvent MODIFIED: " + dc.getDocument().getId());
-                            break;
-                        case REMOVED:
-                            Log.i("TAG", "onEvent REMOVED: " + dc.getDocument().getId());
-                            break;
-                    }
-                }
-
-                showHideEmptyLayout();
-                eventAdapter.notifyDataSetChanged();
-            }
-        });
         eventAdapter = new EventAdapter(eventsList, this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         binding.eventsRv.setLayoutManager(layoutManager);
@@ -170,7 +166,13 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
                 return;
             }
 
+            if (selected.isEmpty()) {
+                Toast.makeText(requireContext(), "Select Dishes for this event", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             final Map<String, Object> ingredient = new HashMap<>();
+            ingredient.put("user_id", ((MainActivity) requireActivity()).currentUser.getUid());
             ingredient.put("name", name);
             ingredient.put("participants", Integer.parseInt(participants));
             ingredient.put("date", new Timestamp(selectedTime));
@@ -179,6 +181,10 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
             String id = UUID.randomUUID().toString();
             ((MainActivity) requireActivity()).database.collection("Events").document(id).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
                 Toast.makeText(requireContext(), "Event Added!", Toast.LENGTH_SHORT).show();
+
+                NotificationUtils notificationUtils = new NotificationUtils(requireContext());
+                notificationUtils.setReminder(selectedTime, dBinding.edEventName.getText().toString(), "You have a event coming.");
+
                 dialog.dismiss();
             }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add Event, Please try again!", Toast.LENGTH_SHORT).show());
 
@@ -196,22 +202,28 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
     }
 
     private void showDatePicker(Runnable callback) {
-        MaterialDatePicker datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Event Date").build();
-        datePicker.show(getChildFragmentManager(), "tag");
-
-        datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+        customDateTimePicker = new CustomDateTimePicker(requireActivity(), new CustomDateTimePicker.ICustomDateTimeListener() {
             @Override
-            public void onPositiveButtonClick(Object selection) {
-                selectedTime = (long) selection;
+            public void onSet(Dialog dialog, Calendar calendarSelected, Date dateSelected, int year, String monthFullName, String monthShortName, int monthNumber, int day, String weekDayFullName, String weekDayShortName, int hour24, int hour12, int min, int sec, String AM_PM) {
+                selectedTime = calendarSelected.getTimeInMillis();
                 callback.run();
             }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(requireContext(), "You need to select event date and time", Toast.LENGTH_SHORT).show();
+            }
         });
+
+        customDateTimePicker.set24HourFormat(false);
+        customDateTimePicker.setTimeIn12HourFormat(7, 1, true);
+        customDateTimePicker.showDialog();
     }
 
     private String getFormattedDate(Long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(time);
-        return DateFormat.format("dd-MMM-yyyy", cal).toString();
+        return DateFormat.format("hh:mm a dd MMM,yyyy", cal).toString();
     }
 
     /**
@@ -240,48 +252,97 @@ public class EventsFragment extends Fragment implements EventAdapter.EventClickL
         }
     }
 
+    private void hideLoading(Runnable callback) {
+        if (selectedList.isEmpty()) {
+            callback.run();
+        }
+    }
+
+    private void deleteEvents(Events events, Runnable callback) {
+        ((MainActivity) requireActivity()).database.collection("Events").document(events.getId()).delete().addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                callback.run();
+            }
+        });
+    }
+
     @Override
     public void onEventClickListener(int position) {
-        showHideEventLayout(true);
 
-        binding.eventHeading.setText(eventsList.get(position).getName());
-        binding.txtEventParticipants.setText(eventsList.get(position).getParticipants() + "");
-        binding.txtEventDate.setText(getFormattedDate(eventsList.get(position).getDate() * 1000));
+        if (isSelectedLayout) {
+            if (selectedList.contains(eventsList.get(position))) {
+                selectedList.remove(eventsList.get(position));
+                if (selectedList.isEmpty()) {
+                    setDeleteLayout(false);
+                }
+            } else {
+                selectedList.add(eventsList.get(position));
+            }
+            eventAdapter.notifyItemChanged(position);
+        } else {
+            showHideEventLayout(true);
 
+            binding.eventHeading.setText(eventsList.get(position).getName());
+            binding.txtEventParticipants.setText(eventsList.get(position).getParticipants() + "");
+            binding.txtEventDate.setText(getFormattedDate(eventsList.get(position).getDate() * 1000));
 
-        ArrayList<Dishes> dishes = new ArrayList<>();
-        ArrayList<String> dishIds = eventsList.get(position).getDishes();
+            ArrayList<Dishes> dishes = new ArrayList<>();
+            ArrayList<String> dishIds = eventsList.get(position).getDishes();
 
-        for (String id : dishIds) {
-            Log.i("TAG", "onEventClickListener: " + id);
-            for (Dishes dish : MainActivity.dishesList) {
-                Log.i("TAG", "onEventClickListener 222: " + dish.getId());
-                if (dish.getId().equalsIgnoreCase(id)) {
-                    Toast.makeText(requireContext(), "found: " + dishes.size(), Toast.LENGTH_SHORT).show();
-                    dishes.add(dish);
-                    break;
+            for (String id : dishIds) {
+                Log.i("TAG", "onEventClickListener: " + id);
+                for (Dishes dish : MainActivity.dishesList) {
+                    Log.i("TAG", "onEventClickListener 222: " + dish.getId());
+                    if (dish.getId().equalsIgnoreCase(id)) {
+                        dishes.add(dish);
+                        break;
+                    }
                 }
             }
+
+            EventDishesAdapter adapter = new EventDishesAdapter(dishes);
+            binding.eventDishesRv.setLayoutManager(new LinearLayoutManager(requireContext()));
+            binding.eventDishesRv.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
-
-        /*for (Dishes dish : MainActivity.dishesList) {
-            if (dishIds.contains(dish.getId().toString())) {
-                dishes.add(dish);
-            }
-        }*/
-
-
-        EventDishesAdapter adapter = new EventDishesAdapter(dishes);
-        binding.eventDishesRv.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.eventDishesRv.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
 
         MainActivity.backPressListener = this;
     }
 
     @Override
+    public void onEventLongClickListener(int position) {
+        if (!isSelectedLayout) {
+            setDeleteLayout(true);
+            selectedList.add(eventsList.get(position));
+            eventAdapter.notifyItemChanged(position);
+        }
+    }
+
+    private void setDeleteLayout(Boolean show) {
+        if (show) {
+            MainActivity.callBackListener = true;
+            MainActivity.backPressListener = this;
+            binding.deleteFab.setVisibility(View.VISIBLE);
+            binding.emptyLayout.btnAddEmpty.setVisibility(View.INVISIBLE);
+            isSelectedLayout = true;
+        } else {
+            MainActivity.callBackListener = false;
+            isSelectedLayout = false;
+            selectedList.clear();
+            binding.deleteFab.setVisibility(View.GONE);
+            binding.emptyLayout.btnAddEmpty.setVisibility(View.VISIBLE);
+            eventAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onBackPressListener() {
-        showHideEventLayout(false);
+
+        if (isSelectedLayout) {
+            setDeleteLayout(false);
+        } else {
+            showHideEventLayout(false);
+        }
     }
 }

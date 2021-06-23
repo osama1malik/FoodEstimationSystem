@@ -59,6 +59,7 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentIngredientsBinding.inflate(getLayoutInflater());
+        ((MainActivity)requireActivity()).binding.appbar.btnDone.setVisibility(View.INVISIBLE);
         initFragment();
         return binding.getRoot();
     }
@@ -104,11 +105,19 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
                     switch (dc.getType()) {
                         case ADDED:
                             Map<String, Object> data = dc.getDocument().getData();
+                            String userid = Objects.requireNonNull(data.get("user_id")).toString();
                             String name = Objects.requireNonNull(data.get("name")).toString();
                             String unit = Objects.requireNonNull(data.get("unit")).toString();
                             int quantity = Integer.parseInt(Objects.requireNonNull(data.get("quantity")).toString());
                             int price = Integer.parseInt(Objects.requireNonNull(data.get("price")).toString());
-                            MainActivity.ingredientsList.add(new Ingredients(dc.getDocument().getId(), name, unit, quantity, price));
+                            if (userid.equalsIgnoreCase(((MainActivity) requireActivity()).currentUser.getUid())) {
+                                Ingredients ingredient = new Ingredients(((MainActivity) requireActivity()).currentUser.getUid(), dc.getDocument().getId(), name, unit, quantity, price);
+
+                                if(!MainActivity.ingredientsList.contains(ingredient)){
+                                    MainActivity.ingredientsList.add(ingredient);
+                                }
+
+                            }
                             Log.i("TAG", "onEvent ADDED: " + dc.getDocument().getData().get("ingredients"));
                             break;
                         case MODIFIED:
@@ -193,6 +202,7 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
             String unit = dBinding.edIngredientUnit.getText().toString();
 
             final Map<String, Object> ingredient = new HashMap<>();
+            ingredient.put("user_id", ((MainActivity) requireActivity()).currentUser.getUid());
             ingredient.put("name", name);
             ingredient.put("price", price);
             ingredient.put("quantity", quantity);
@@ -201,7 +211,10 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
             ((MainActivity) requireActivity()).database.collection("Ingredients").document(fId).set(ingredient, SetOptions.merge()).addOnCompleteListener(task -> {
                 Toast.makeText(requireContext(), "Ingredient Added!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-            }).addOnFailureListener(e -> Toast.makeText(requireContext(), "Failed to add ingredient, Please try again!", Toast.LENGTH_SHORT).show());
+            }).addOnFailureListener(e -> {
+                Log.i("TAG", "showAddIngredientDialog: error file adding ingredient.", e);
+                Toast.makeText(requireContext(), "Failed to add ingredient, Please try again!", Toast.LENGTH_SHORT).show();
+            });
         });
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();

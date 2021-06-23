@@ -7,41 +7,9 @@
     android:background="@color/white"
     tools:context=".fragments.RecipesFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <include
         android:id="@+id/header_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/main_icon"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.5"
-            app:layout_constraintHorizontal_bias="0.1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/main_icon" />
-
-        <ImageView
-            android:id="@+id/logo_text"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/_12sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.35"
-            app:layout_constraintStart_toEndOf="@id/main_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/food_estimation_logo" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        layout="@layout/layout_header" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/main_tab_layout"

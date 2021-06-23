@@ -9,9 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.scorpio.foodestimationsystem.R;
+import com.scorpio.foodestimationsystem.fragments.receipesviews.DishesFragment;
+import com.scorpio.foodestimationsystem.fragments.receipesviews.IngredientsFragment;
 import com.scorpio.foodestimationsystem.model.Dishes;
 
 import java.util.ArrayList;
@@ -37,15 +41,27 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         if (position == list.size()) {
             holder.dishImage.setImageResource(R.drawable.item_add);
             holder.dishName.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(view -> listener.onDishClickListener(-1));
         } else {
+
+            if (DishesFragment.selectedList.contains(list.get(position))) {
+                holder.mainCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardSelected));
+            } else {
+                holder.mainCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white));
+            }
+
             holder.dishImage.setImageResource(R.drawable.ic_placeholder);
             holder.dishName.setVisibility(View.VISIBLE);
             holder.dishName.setText(list.get(position).getName());
             holder.itemView.setOnClickListener(view -> listener.onDishClickListener(position));
+            holder.itemView.setOnLongClickListener(view -> {
+                listener.onDishLongClickListener(position);
+                return true;
+            });
         }
     }
 
@@ -57,15 +73,20 @@ public class DishAdapter extends RecyclerView.Adapter<DishAdapter.MyViewHolder> 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView dishImage;
         TextView dishName;
+        MaterialCardView mainCard;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             dishImage = itemView.findViewById(R.id.image_dish);
             dishName = itemView.findViewById(R.id.text_dish);
+            mainCard = itemView.findViewById(R.id.main_card);
+
         }
     }
 
     public interface DishClickListener {
         void onDishClickListener(int position);
+
+        void onDishLongClickListener(int position);
     }
 }
