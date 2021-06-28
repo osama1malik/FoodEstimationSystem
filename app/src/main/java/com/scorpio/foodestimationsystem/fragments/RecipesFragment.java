@@ -16,9 +16,7 @@ import com.scorpio.foodestimationsystem.adapter.ViewPagerAdapter;
 import com.scorpio.foodestimationsystem.databinding.FragmentRecipesBinding;
 import com.scorpio.foodestimationsystem.fragments.receipesviews.DishesFragment;
 import com.scorpio.foodestimationsystem.fragments.receipesviews.IngredientsFragment;
-import com.scorpio.foodestimationsystem.fragments.receipesviews.StatsFragment;
 
-import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_SET_USER_VISIBLE_HINT;
 
 public class RecipesFragment extends Fragment {

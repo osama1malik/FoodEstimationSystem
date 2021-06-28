@@ -60,7 +60,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/total_cost_heading"
-        app:layout_constraintTop_toBottomOf="@id/header_layout" />
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        tools:listitem="@layout/item_add_ingredient" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_ingredient"

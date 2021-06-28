@@ -59,7 +59,7 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentIngredientsBinding.inflate(getLayoutInflater());
-        ((MainActivity)requireActivity()).binding.appbar.btnDone.setVisibility(View.INVISIBLE);
+        ((MainActivity) requireActivity()).binding.appbar.btnDone.setVisibility(View.INVISIBLE);
         initFragment();
         return binding.getRoot();
     }
@@ -113,7 +113,7 @@ public class IngredientsFragment extends Fragment implements IngredientAdapter.I
                             if (userid.equalsIgnoreCase(((MainActivity) requireActivity()).currentUser.getUid())) {
                                 Ingredients ingredient = new Ingredients(((MainActivity) requireActivity()).currentUser.getUid(), dc.getDocument().getId(), name, unit, quantity, price);
 
-                                if(!MainActivity.ingredientsList.contains(ingredient)){
+                                if (!MainActivity.ingredientsList.contains(ingredient)) {
                                     MainActivity.ingredientsList.add(ingredient);
                                 }
 
